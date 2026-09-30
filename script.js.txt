@@ -1,5 +1,5 @@
 // REEMPLAZA ESTA URL CON LA QUE OBTUVISTE DE GOOGLE APPS SCRIPT
-const WEBHOOK_URL = https://script.google.com/macros/s/AKfycbwxJXuhMZY-uu8U_alnqxygLNLC0yObrQHiW2WDApyCBLzOc2pCWapZ367JQ_nCcTlPGQ/exec;
+const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwxJXuhMZY-uu8U_alnqxygLNLC0yObrQHiW2WDApyCBLzOc2pCWapZ367JQ_nCcTlPGQ/exec";
 
 // Lógica de pestañas (Tabs)
 const btnMesa = document.getElementById('btn-mesa');
