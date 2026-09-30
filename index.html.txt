@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clementina | Reservas</title>
+    <!-- Importación de tipografías -->
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Montserrat:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Clementina</h1>
+            <p class="slogan">La fusión de tradición, creatividad y elegancia gastronómica</p>
+        </header>
+
+        <div class="tabs">
+            <button id="btn-mesa" class="tab-btn active">Reserva de Mesa</button>
+            <button id="btn-evento" class="tab-btn">Experiencias y Eventos</button>
+        </div>
+
+        <!-- Formulario Principal -->
+        <form id="reserva-form">
+            <input type="hidden" id="tipo-reserva" name="tipo" value="mesa">
+
+            <!-- Sección de Mesa -->
+            <div id="seccion-mesa" class="form-section active">
+                <div class="input-group">
+                    <label for="fecha">Fecha</label>
+                    <input type="date" id="fecha" name="fecha">
+                </div>
+                <div class="input-group">
+                    <label for="hora">Hora</label>
+                    <input type="time" id="hora" name="hora">
+                </div>
+            </div>
+
+            <!-- Sección de Evento -->
+            <div id="seccion-evento" class="form-section">
+                <div class="input-group">
+                    <label for="evento-select">Selecciona el Evento</label>
+                    <select id="evento-select" name="evento">
+                        <option value="">-- Elige una experiencia --</option>
+                        <option value="Cata de Mezcal">Cata de Mezcal</option>
+                        <option value="Taller de Maíz">Taller de Maíz</option>
+                        <option value="Cena Maridaje">Cena Maridaje</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="fecha-evento">Fecha del Evento</label>
+                    <input type="date" id="fecha-evento" name="fecha_evento">
+                </div>
+            </div>
+
+            <!-- Datos de Contacto (Comunes) -->
+            <div class="input-group">
+                <label for="nombre">Nombre a nombre de quién reserva</label>
+                <input type="text" id="nombre" name="nombre" required>
+            </div>
+            <div class="input-group">
+                <label for="personas">Número de Personas</label>
+                <input type="number" id="personas" name="personas" min="1" max="20" required>
+            </div>
+            <div class="input-group">
+                <label for="telefono">Teléfono</label>
+                <input type="tel" id="telefono" name="telefono" required>
+            </div>
+            <div class="input-group">
+                <label for="email">Correo Electrónico</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <button type="submit" id="submit-btn">Confirmar Reserva</button>
+        </form>
+
+        <!-- Mensaje de Confirmación y Calendarios -->
+        <div id="confirmacion" class="hidden">
+            <h2>¡Reserva Confirmada!</h2>
+            <p>Te esperamos para vivir una experiencia gastronómica memorable.</p>
+            <div class="calendario-btns">
+                <a id="btn-google" href="#" target="_blank" class="cal-btn">Añadir a Google Calendar</a>
+                <button id="btn-apple" class="cal-btn outline">Añadir a Apple Calendar</button>
+            </div>
+            <button onclick="location.reload()" class="btn-link">Hacer otra reserva</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
