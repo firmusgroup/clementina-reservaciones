@@ -1,0 +1,119 @@
+// REEMPLAZA ESTA URL CON LA QUE OBTUVISTE DE GOOGLE APPS SCRIPT
+const WEBHOOK_URL = https://script.google.com/macros/s/AKfycbwxJXuhMZY-uu8U_alnqxygLNLC0yObrQHiW2WDApyCBLzOc2pCWapZ367JQ_nCcTlPGQ/exec;
+
+// Lógica de pestañas (Tabs)
+const btnMesa = document.getElementById('btn-mesa');
+const btnEvento = document.getElementById('btn-evento');
+const seccionMesa = document.getElementById('seccion-mesa');
+const seccionEvento = document.getElementById('seccion-evento');
+const tipoReserva = document.getElementById('tipo-reserva');
+
+btnMesa.addEventListener('click', () => {
+    btnMesa.classList.add('active');
+    btnEvento.classList.remove('active');
+    seccionMesa.classList.add('active');
+    seccionEvento.classList.remove('active');
+    tipoReserva.value = 'mesa';
+});
+
+btnEvento.addEventListener('click', () => {
+    btnEvento.classList.add('active');
+    btnMesa.classList.remove('active');
+    seccionEvento.classList.add('active');
+    seccionMesa.classList.remove('active');
+    tipoReserva.value = 'evento';
+});
+
+// Envío del formulario
+const form = document.getElementById('reserva-form');
+const confirmacion = document.getElementById('confirmacion');
+const submitBtn = document.getElementById('submit-btn');
+
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    submitBtn.innerText = "Procesando...";
+    submitBtn.disabled = true;
+
+    // Recolectar datos
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+    
+    // Ajustar fechas dependiendo del tipo
+    let fechaFinal = data.tipo === 'mesa' ? data.fecha : data.fecha_evento;
+    let horaFinal = data.tipo === 'mesa' ? data.hora : "20:00"; // Hora por defecto para eventos si no se especifica
+    let tituloCal = data.tipo === 'mesa' ? 'Reserva Mesa en Clementina' : `Evento Clementina: ${data.evento}`;
+
+    const payload = {
+        tipo: data.tipo,
+        fecha: fechaFinal,
+        hora: data.hora || "",
+        evento: data.evento || "",
+        nombre: data.nombre,
+        personas: data.personas,
+        telefono: data.telefono,
+        email: data.email
+    };
+
+    try {
+        // Enviar a Google Sheets
+        await fetch(WEBHOOK_URL, {
+            method: 'POST',
+            mode: 'no-cors', // Evita errores de CORS en el navegador
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        // Configurar botones de calendario
+        generarEnlacesCalendario(tituloCal, fechaFinal, horaFinal, data.personas);
+
+        // Mostrar confirmación
+        form.classList.add('hidden');
+        confirmacion.classList.remove('hidden');
+
+    } catch (error) {
+        alert("Hubo un error al guardar. Por favor intenta de nuevo.");
+        submitBtn.innerText = "Confirmar Reserva";
+        submitBtn.disabled = false;
+    }
+});
+
+// Función para generar calendarios
+function generarEnlacesCalendario(titulo, fecha, hora, personas) {
+    // Formatear fechas para los enlaces
+    const [year, month, day] = fecha.split('-');
+    let [hour, minute] = (hora || "20:00").split(':');
+    
+    // Formato Google (YYYYMMDDTHHMMSS) - Asume hora local
+    const startStr = `${year}${month}${day}T${hour}${minute}00`;
+    
+    // Para calcular el fin (asumimos 2 horas de duración)
+    let endHour = parseInt(hour) + 2;
+    let endStr = `${year}${month}${day}T${endHour.toString().padStart(2, '0')}${minute}00`;
+
+    const detalles = `Reserva para ${personas} personas. ¡Te esperamos en Clementina!`;
+
+    // 1. Google Calendar URL
+    const googleUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(titulo)}&dates=${startStr}/${endStr}&details=${encodeURIComponent(detalles)}`;
+    document.getElementById('btn-google').href = googleUrl;
+
+    // 2. Apple Calendar (.ics)
+    const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+SUMMARY:${titulo}
+DESCRIPTION:${detalles}
+DTSTART;TZID=America/Mexico_City:${startStr}
+DTEND;TZID=America/Mexico_City:${endStr}
+END:VEVENT
+END:VCALENDAR`;
+
+    document.getElementById('btn-apple').addEventListener('click', () => {
+        const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'reserva_clementina.ics';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+}
